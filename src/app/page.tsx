@@ -14,8 +14,16 @@ export default function Home() {
           <h1 className="mx-12 text-3xl font-bold italic text-white">placeholder</h1>
         </div>
         <div className="flex w-full flex-1 flex-row gap-12 p-12">
-          <div className="flex basis-1/2 flex-col items-center">
+          <div className="flex basis-1/2 flex-col items-center text-white">
             <h2 className="text-balance text-9xl font-extrabold text-white">Level up your game.</h2>
+            <div className="text-xl my-20">
+              <h3 className="text-5xl text-balance my-4"> Meet your team.</h3>
+              <p>Connect with like-minded game devs, designers, and artists.</p>
+              <h3 className="text-5xl text-balance my-4">Build your Game.</h3>
+              <p>Turn your ideas into reality. Get feedback from players, and turn it into insights with our chatbot.</p>
+              <h3 className="text-5xl text-balance my-4">Share your World</h3>
+              <p>Meet your players where they are. Your posts will reach any ActivityPub platform.</p>
+            </div>
           </div>
           <div className="flex basis-1/2 flex-col items-center">
             <div className="flex-1 flex-row gap-4 rounded-lg bg-slate-800 p-4">
