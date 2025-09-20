@@ -4,7 +4,7 @@ import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 
 export function Post(props: { username: string; avatar: string; date: Date; message: string; media: string[] }) {
   return (
-    <div className="flex w-[768px] flex-row gap-2 rounded-md border-2 border-slate-700 p-2">
+    <div className="flex w-[630px] flex-row gap-2 rounded-md border-2 border-slate-700 p-2">
       <div className="flex h-full">
         <Avatar className="h-16 w-16">
           <AvatarImage src={props.avatar} />

@@ -5,6 +5,10 @@ import Image from "next/image";
 import thum1 from "../../public/thumbnail1.webp";
 import thum2 from "../../public/thumbnail2.webp";
 import thum3 from "../../public/thumbnail3.webp";
+import groups from "../../public/groups.svg";
+import feedback from "../../public/feedback.svg";
+import share from "../../public/share.svg";
+
 
 export default function Home() {
   return (
@@ -14,21 +18,39 @@ export default function Home() {
           <h1 className="mx-12 text-3xl font-bold italic text-white">placeholder</h1>
         </div>
         <div className="flex w-full flex-1 flex-row gap-12 p-12">
-          <div className="flex basis-1/2 flex-col items-center text-white">
+          <div className="flex basis-2/3 flex-col text-white gap-12">
             <h2 className="text-balance text-9xl font-extrabold text-white">Level up your game.</h2>
-            <div className="text-xl my-20">
-              <h3 className="text-5xl text-balance my-4"> Meet your team.</h3>
-              <p>Connect with like-minded game devs, designers, and artists.</p>
-              <h3 className="text-5xl text-balance my-4">Build your Game.</h3>
-              <p>Turn your ideas into reality. Get feedback from players, and turn it into insights with our chatbot.</p>
-              <h3 className="text-5xl text-balance my-4">Share your World</h3>
-              <p>Meet your players where they are. Your posts will reach any ActivityPub platform.</p>
+            <div className="flex flex-row w-full gap-4">
+              <div className="flex flex-col w-full rounded-lg bg-zinc-900 p-6 basis-1/3 gap-4">
+                <div className="w-20 h-20 rounded-md bg-zinc-800 flex items-center justify-center p-4">
+                  <Image className="w-full h-full fill-white" src={groups} alt=""/>
+                </div>
+                <h3 className="text-5xl text-balance font-bold">Meet your team.</h3>
+                <p className="text-2xl">Connect with like-minded game devs, designers, and artists.</p>
+              </div>
+              <div className="flex flex-col w-full rounded-lg bg-zinc-900 p-6 basis-1/3 gap-4">
+                <div className="w-20 h-20 rounded-md bg-zinc-800 flex items-center justify-center p-4">
+                  <Image className="w-full h-full fill-white" src={feedback} alt=""/>
+                </div>
+                <h3 className="text-5xl text-balance font-bold">Build your game.</h3>
+                <p className="text-2xl">Turn your ideas into reality. Leverage insightful feedback from creators and AI.</p>
+              </div>
+              <div className="flex flex-col w-full rounded-lg bg-zinc-900 p-6 basis-1/3 gap-4">
+                <div className="w-20 h-20 rounded-md bg-zinc-800 flex items-center justify-center p-4">
+                  <Image className="w-full h-full fill-white" src={share} alt=""/>
+                </div>
+                <h3 className="text-5xl text-balance font-bold">Share your vision.</h3>
+                <p className="text-2xl">Meet your players where they are. Your posts will reach any ActivityPub platform.</p>
+              </div>
             </div>
+            <button className="text-3xl bg-white text-black font-semibold py-4 rounded-full flex w-1/4 flex-col items-center">
+              <h1 className="text-center">New Game</h1>
+            </button>
           </div>
-          <div className="flex basis-1/2 flex-col items-center">
+          <div className="flex basis-1/3 flex-col items-center">
             <div className="flex-1 flex-row gap-4 rounded-lg bg-slate-800 p-4">
               <div className="flex h-full w-full flex-col gap-4">
-                <div className="flex w-[768px] flex-row gap-2 rounded-md border-2 border-slate-700 p-2">
+                <div className="flex w-[630px] flex-row gap-2 rounded-md border-2 border-slate-700 p-2">
                   <div className="flex h-full">
                     <Avatar className="h-16 w-16">
                       <AvatarImage src="https://cdn.discordapp.com/avatars/460083959720706048/72e6aa5994b69e83dfc9186aa21e1f40" />
