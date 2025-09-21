@@ -9,50 +9,10 @@ import {
 
 export default function NavigationBar() {
   return (
-    <div>
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <Link href="/" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>Home</NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/about" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>About Me</NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/narrative" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>Personal Narrative</NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/memory" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Memory as a Point of Departure
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/letter" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>Letter to a Young...</NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/response" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>Clarifying a Response</NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/synthesis" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Exploring New Perspectives Through Synthesis
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+    <div className="flex flex-row gap-4 px-12 py-6 items-center">
+      <h1 className="text-3xl font-bold italic text-white mr-12">Frame One</h1>
+      <a className="text-xl text-white bg-slate-900 rounded-lg py-4 px-8 font-semibold" href="/chat">Chat</a>
+      <a className="text-xl text-white bg-slate-900 rounded-lg py-4 px-8 font-semibold" href="/feed">Scroll</a>
     </div>
   );
 }
