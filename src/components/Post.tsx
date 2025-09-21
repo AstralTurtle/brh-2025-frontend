@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { apiService } from "@/lib/api";
 import { getDiceBearAvatar } from "@/lib/utils";
 import { ReplyComponent } from "./ReplyComponent";
+import parse from "html-react-parser";
 
 interface Reply {
   id: string;
@@ -22,6 +23,7 @@ export function Post(props: {
   avatar: string;
   date: Date;
   message: string;
+  embed: string;
   media?: string[];
   isReply?: boolean;
 }) {
@@ -162,6 +164,9 @@ export function Post(props: {
           </div>
 
           <p className="text-lg font-normal text-white mb-3">{props.message}</p>
+
+          {/* {props.embed ? <iframe className="h-32" src={props.embed}></iframe> : <></>} */}
+          {props.embed ? parse(props.embed) : <></>}
 
           {props.media && props.media.length > 0 && (
             <Carousel className="my-2">

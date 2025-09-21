@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
+import NavBar from "@/components/NavigationBar"
 
 type Role = "user" | "assistant";
 type Msg = { role: Role; content: string; createdAt?: string };
@@ -193,9 +194,7 @@ export default function ChatPage() {
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
         {/* Top bar (matches landing) */}
-        <div className="flex h-24 w-full items-center bg-transparent">
-          <h1 className="mx-12 text-3xl font-bold italic text-white">placeholder</h1>
-        </div>
+        <NavBar></NavBar>
 
         {/* Two-column layout (matches landing spacing) */}
         <div className="flex w-full flex-1 flex-row gap-12 p-12">

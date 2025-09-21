@@ -1,3 +1,5 @@
+"use client"
+
 import { Post } from "@/components/Post";
 import { Profile } from "@/components/Profile";
 
