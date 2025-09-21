@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
@@ -8,6 +10,10 @@ import { apiService } from "@/lib/api";
 import { getDiceBearAvatar, getCookie } from "@/lib/utils";
 import { ReplyComponent } from "./ReplyComponent";
 import parse from "html-react-parser";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface Reply {
   id: string;
@@ -16,6 +22,108 @@ interface Reply {
   published: string;
   icon?: string;
   isOptimistic?: boolean; // Add flag to track optimistic replies
+}
+
+// Markdown component with styling
+function MarkdownContent({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        // Headings
+        h1: (props) => <h1 className="text-xl font-bold my-3 text-white" {...props} />,
+        h2: (props) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: (props) => <h3 className="text-base font-semibold my-2 text-white" {...props} />,
+        h4: (props) => <h4 className="text-sm font-semibold my-2 text-white" {...props} />,
+        h5: (props) => <h5 className="text-sm font-medium my-1 text-white" {...props} />,
+        h6: (props) => <h6 className="text-xs font-medium my-1 text-white" {...props} />,
+
+
+        // Paragraphs and text
+        p: (props) => <p className="my-2 leading-relaxed text-zinc-300" {...props} />,
+        strong: (props) => <strong className="font-bold text-white" {...props} />,
+        em: (props) => <em className="italic text-zinc-200" {...props} />,
+
+
+        // Lists
+        ul: (props) => <ul className="list-disc pl-6 my-2 space-y-1 text-zinc-300" {...props} />,
+        ol: (props) => <ol className="list-decimal pl-6 my-2 space-y-1 text-zinc-300" {...props} />,
+        li: (props) => <li className="leading-relaxed" {...props} />,
+
+
+        // Quotes and horizontal rules
+        blockquote: (props) => (
+          <blockquote className="border-l-4 border-zinc-600 pl-4 italic text-zinc-400 my-3 bg-zinc-800/30 py-2 rounded-r" {...props} />
+        ),
+        hr: (props) => <hr className="border-zinc-600 my-4" {...props} />,
+
+
+        // Links
+        a: ({ href, children, ...props }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline transition-colors"
+            {...props}
+          >
+            {children}
+          </a>
+        ),
+
+
+        // Tables
+        table: (props) => (
+          <div className="overflow-x-auto my-4">
+            <table className="min-w-full border-collapse border border-zinc-600" {...props} />
+          </div>
+        ),
+        thead: (props) => <thead className="bg-zinc-700" {...props} />,
+        th: (props) => <th className="border border-zinc-600 px-3 py-2 text-left font-semibold text-white" {...props} />,
+        td: (props) => <td className="border border-zinc-600 px-3 py-2 text-zinc-300" {...props} />,
+
+
+        // Code blocks and inline code
+        code({ inline, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || "");
+
+          if (!inline) {
+            return (
+              <div className="my-3">
+                <SyntaxHighlighter
+                  style={oneDark}
+                  language={match?.[1] || "text"}
+                  PreTag="div"
+                  customStyle={{
+                    margin: 0,
+                    borderRadius: 8,
+                    fontSize: "0.875rem",
+                    backgroundColor: "#1f2937"
+                  }}
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, "")}
+                </SyntaxHighlighter>
+              </div>
+            );
+          }
+
+          return (
+            <code className="bg-zinc-700 text-zinc-200 rounded px-1.5 py-0.5 font-mono text-sm" {...props}>
+              {children}
+            </code>
+          );
+        },
+
+
+        // Custom styling for better dark theme integration
+        del: (props) => <del className="line-through text-zinc-500" {...props} />,
+        mark: (props) => <mark className="bg-yellow-600 text-black px-1 rounded" {...props} />,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
 }
 
 export function Post(props: {
@@ -37,6 +145,7 @@ export function Post(props: {
   const [replyCount, setReplyCount] = useState(0);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Extract username from ActivityPub ID or use as-is
   const extractUsername = (attributedTo: string): string => {
@@ -169,6 +278,18 @@ export function Post(props: {
     setShowReplies(!showReplies);
   };
 
+  const nextImage = () => {
+    if (props.media && props.media.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % props.media.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (props.media && props.media.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + props.media.length) % props.media.length);
+    }
+  };
+
   return (
     <div className={`w-full ${props.isReply ? 'ml-8 border-l-2 border-zinc-600 pl-4' : ''}`}>
       <div className="flex w-full flex-row gap-2 rounded-md border-2 border-slate-700 p-4 bg-zinc-800">
@@ -189,21 +310,74 @@ export function Post(props: {
             </h2>
           </div>
 
-          <p className="text-lg font-normal text-white mb-3 whitespace-pre-line">{props.message}</p>
+          {/* Message content with markdown support */}
+          <div className="whitespace-pre-line mb-3 break-words">
+            <MarkdownContent content={props.message} />
+          </div>
 
-          {/* {props.embed ? <iframe className="h-32" src={props.embed}></iframe> : <></>} */}
           {props.embed ? parse(props.embed) : <></>}
 
           {props.media && props.media.length > 0 && (
-            <Carousel className="my-2">
-              <CarouselContent>
-                {props.media.map((url: string, i: number) => (
-                  <CarouselItem className="basis-2/3 bg-red-200 h-96" key={i}>
-                    <Image className="rounded-xl" src={url} alt="" fill={true} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
+            <div className="relative my-2">
+              <div className="overflow-hidden rounded-xl">
+                <div
+                  className="flex transition-transform duration-300 ease-in-out"
+                  style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                >
+                  {props.media.map((url: string, i: number) => (
+                    <div key={i} className="w-full flex-shrink-0">
+                      <div className="relative h-96">
+                        <Image
+                          className="object-cover w-full h-full"
+                          src={url}
+                          alt={`Media ${i + 1}`}
+                          fill={true}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Navigation buttons (only show if more than 1 image) */}
+              {props.media.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+                    aria-label="Previous image"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+                    aria-label="Next image"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  {/* Dots indicator */}
+                  <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {props.media.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImageIndex(i)}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                          i === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                        }`}
+                        aria-label={`Go to image ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {/* Post Actions */}
