@@ -42,7 +42,7 @@ export default function Home() {
     // Ensure no smooth animation on programmatic jumps
     container.style.scrollBehavior = "auto"
 
-    const scrollSpeed = 3 // px per frame
+    const scrollSpeed = 1 // px per frame
     let lastTime = 0
 
     const tick = (t: number) => {

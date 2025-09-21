@@ -51,7 +51,7 @@ export default function SearchBar({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`w-full rounded-xl bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/40 ${sizeClasses}`}
+          className={`w-full rounded-xl bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-400 border border-zinc-700 hover:border-zinc-600 transition-colors ${sizeClasses}`}
         />
       </div>
     </form>
