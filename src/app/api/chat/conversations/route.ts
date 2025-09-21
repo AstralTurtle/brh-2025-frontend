@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
-import { getDb } from "@/lib/mongodb";
 import { getUserFromRequest } from "@/lib/auth";
+import { getDb } from "@/lib/mongodb";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const auth = await getUserFromRequest(req);
@@ -16,6 +16,6 @@ export async function GET(req: NextRequest) {
     .toArray();
 
   return Response.json(
-    list.map((c) => ({ id: c._id.toString(), title: c.title || "Untitled", updatedAt: c.updatedAt }))
+    list.map((c) => ({ id: c._id.toString(), title: c.title || "Untitled", updatedAt: c.updatedAt })),
   );
 }

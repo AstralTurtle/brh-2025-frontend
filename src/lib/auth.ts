@@ -1,5 +1,5 @@
-import { NextRequest } from "next/server";
 import { decodeJwt, importSPKI, jwtVerify } from "jose";
+import { NextRequest } from "next/server";
 
 type AuthResult = { userId: string | null };
 
@@ -15,10 +15,7 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthResult> 
 
   if (publicKeyPem) {
     try {
-      const key =
-        (await importSPKI(publicKeyPem, "RS256").catch(() =>
-          importSPKI(publicKeyPem, "ES256")
-        )) as any;
+      const key = (await importSPKI(publicKeyPem, "RS256").catch(() => importSPKI(publicKeyPem, "ES256"))) as any;
       const { payload } = await jwtVerify(token, key);
       return { userId: (payload.sub as string) || (payload.userId as string) || null };
     } catch {
@@ -30,7 +27,7 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthResult> 
   try {
     const decoded = decodeJwt(token);
     const uid = (decoded.sub as string) || (decoded.userId as string) || null;
-    return uid ? { userId: uid } : (allowAnon ? { userId: "dev-user" } : { userId: null });
+    return uid ? { userId: uid } : allowAnon ? { userId: "dev-user" } : { userId: null };
   } catch {
     return allowAnon ? { userId: "dev-user" } : { userId: null };
   }

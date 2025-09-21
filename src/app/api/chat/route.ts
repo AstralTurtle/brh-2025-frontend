@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/mongodb";
-import { getModel, generationConfig, safetySettings, systemPrompt, modelName, gameDevSystemPrompt } from "@/lib/gemini";
 import { getUserFromRequest } from "@/lib/auth";
+import { gameDevSystemPrompt, generationConfig, getModel, modelName, safetySettings, systemPrompt } from "@/lib/gemini";
+import { getDb } from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -25,13 +25,9 @@ export async function POST(req: NextRequest) {
     const db = await getDb();
     const conversations = db.collection("conversations");
 
-    let convId = conversationId && ObjectId.isValid(conversationId)
-      ? new ObjectId(conversationId)
-      : new ObjectId();
+    let convId = conversationId && ObjectId.isValid(conversationId) ? new ObjectId(conversationId) : new ObjectId();
 
-    let conversation = conversationId
-      ? await conversations.findOne({ _id: convId, userId: auth.userId })
-      : null;
+    let conversation = conversationId ? await conversations.findOne({ _id: convId, userId: auth.userId }) : null;
 
     if (!conversation) {
       await conversations.insertOne({
@@ -47,11 +43,11 @@ export async function POST(req: NextRequest) {
     const userMsg: ChatMessage = { role: "user", content: message, createdAt: new Date() };
     await conversations.updateOne(
       { _id: convId, userId: auth.userId },
-      { $push: { messages: userMsg }, $set: { updatedAt: new Date() } }
+      { $push: { messages: userMsg }, $set: { updatedAt: new Date() } },
     );
 
     const doc = await conversations.findOne({ _id: convId, userId: auth.userId });
-    const history = ((doc?.messages ?? []) as ChatMessage[]).map(m => ({
+    const history = ((doc?.messages ?? []) as ChatMessage[]).map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
@@ -94,7 +90,7 @@ export async function POST(req: NextRequest) {
               updatedAt: new Date(),
               ...(doc?.title ? {} : { title: assistantText.split(".")[0]?.slice(0, 60) ?? "New chat" }),
             },
-          }
+          },
         );
 
         await writer.close();

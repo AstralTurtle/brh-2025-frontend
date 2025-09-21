@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
-import { ObjectId } from "mongodb";
-import { getDb } from "@/lib/mongodb";
 import { getUserFromRequest } from "@/lib/auth";
+import { getDb } from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: { conversationId: string } }) {
   const auth = await getUserFromRequest(req);
@@ -11,10 +11,12 @@ export async function GET(req: NextRequest, { params }: { params: { conversation
   if (!ObjectId.isValid(conversationId)) return new Response("Invalid id", { status: 400 });
 
   const db = await getDb();
-  const conv = await db.collection("conversations").findOne(
-    { _id: new ObjectId(conversationId), userId: auth.userId },
-    { projection: { _id: 1, title: 1, messages: 1, updatedAt: 1 } }
-  );
+  const conv = await db
+    .collection("conversations")
+    .findOne(
+      { _id: new ObjectId(conversationId), userId: auth.userId },
+      { projection: { _id: 1, title: 1, messages: 1, updatedAt: 1 } },
+    );
   if (!conv) return new Response("Not found", { status: 404 });
 
   return Response.json({

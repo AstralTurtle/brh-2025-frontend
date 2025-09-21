@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import remarkGfm from "remark-gfm";
 
 type Role = "user" | "assistant";
 type Msg = { role: Role; content: string; createdAt?: string };
@@ -19,9 +19,7 @@ export default function ChatPage() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationMeta[]>([]);
   const [loadingConv, setLoadingConv] = useState(false);
-  const [modelLabel, setModelLabel] = useState<string>(
-    process.env.NEXT_PUBLIC_GEMINI_MODEL || "gemini-1.5-flash"
-  );
+  const [modelLabel, setModelLabel] = useState<string>(process.env.NEXT_PUBLIC_GEMINI_MODEL || "gemini-1.5-flash");
   const [mode, setMode] = useState<"general" | "game-dev">("general");
 
   const endRef = useRef<HTMLDivElement>(null);
@@ -68,7 +66,7 @@ export default function ChatPage() {
       if (conversationId === id) startNewChat();
       void refreshConversations();
     },
-    [conversationId, refreshConversations, startNewChat]
+    [conversationId, refreshConversations, startNewChat],
   );
 
   const send = useCallback(async () => {
@@ -92,9 +90,7 @@ export default function ChatPage() {
       });
       if (!res.ok || !res.body) {
         const msg =
-          res.status === 401
-            ? "You are not signed in. Please log in and try again."
-            : `Request failed: ${res.status}`;
+          res.status === 401 ? "You are not signed in. Please log in and try again." : `Request failed: ${res.status}`;
         throw new Error(msg);
       }
 
@@ -147,29 +143,21 @@ export default function ChatPage() {
         remarkPlugins={[remarkGfm]}
         components={{
           // Headings
-          h1: (props) => <h1 className="text-lg font-semibold my-2" {...props} />,
-          h2: (props) => <h2 className="text-base font-semibold my-2" {...props} />,
-          h3: (props) => <h3 className="text-sm font-semibold my-2" {...props} />,
+          h1: (props) => <h1 className="my-2 text-lg font-semibold" {...props} />,
+          h2: (props) => <h2 className="my-2 text-base font-semibold" {...props} />,
+          h3: (props) => <h3 className="my-2 text-sm font-semibold" {...props} />,
           // Paragraphs and lists
           p: (props) => <p className="my-2 leading-relaxed" {...props} />,
-          ul: (props) => <ul className="list-disc pl-6 my-2 space-y-1" {...props} />,
-          ol: (props) => <ol className="list-decimal pl-6 my-2 space-y-1" {...props} />,
+          ul: (props) => <ul className="my-2 list-disc space-y-1 pl-6" {...props} />,
+          ol: (props) => <ol className="my-2 list-decimal space-y-1 pl-6" {...props} />,
           li: (props) => <li className="leading-relaxed" {...props} />,
-          blockquote: (props) => (
-            <blockquote className="border-l-2 pl-3 italic text-muted-foreground my-2" {...props} />
-          ),
+          blockquote: (props) => <blockquote className="my-2 border-l-2 pl-3 italic text-zinc-300" {...props} />,
           a: ({ href, children, ...props }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline text-primary"
-              {...props}
-            >
+            <a href={href} target="_blank" rel="noopener noreferrer" className="text-white underline" {...props}>
               {children}
             </a>
           ),
-          table: (props) => <table className="border-collapse my-2" {...props} />,
+          table: (props) => <table className="my-2 border-collapse" {...props} />,
           th: (props) => <th className="border px-2 py-1 text-left" {...props} />,
           td: (props) => <td className="border px-2 py-1 align-top" {...props} />,
           // Code blocks and inline code
@@ -189,7 +177,7 @@ export default function ChatPage() {
               );
             }
             return (
-              <code className="bg-muted rounded px-1 py-0.5 font-mono text-[0.85em]" {...props}>
+              <code className="rounded bg-zinc-800 px-1 py-0.5 font-mono text-[0.85em]" {...props}>
                 {children}
               </code>
             );
@@ -202,116 +190,141 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex">
-      {/* Sidebar */}
-      <aside className="w-64 border-r p-3 flex flex-col gap-3">
-        <Button variant="secondary" onClick={startNewChat} disabled={isSending}>
-          New chat
-        </Button>
-
-        {/* Mode selector */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-muted-foreground">Mode</label>
-          <select
-            className="flex-1 border rounded px-2 py-1 text-sm bg-background"
-            value={mode}
-            onChange={(e) => setMode(e.target.value as "general" | "game-dev")}
-            disabled={isSending}
-          >
-            <option value="general">General</option>
-            <option value="game-dev">Game design/dev</option>
-          </select>
+    <main className="flex min-h-screen flex-col items-center justify-between">
+      <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
+        {/* Top bar (matches landing) */}
+        <div className="flex h-24 w-full items-center bg-transparent">
+          <h1 className="mx-12 text-3xl font-bold italic text-white">placeholder</h1>
         </div>
 
-        <div className="text-xs text-muted-foreground">Conversations</div>
-        <div className="flex-1 overflow-y-auto space-y-1">
-          {conversations.length === 0 ? (
-            <div className="text-xs text-muted-foreground">No conversations yet</div>
-          ) : (
-            conversations.map((c) => (
-              <div key={c.id} className="flex items-center gap-2">
-                <button
-                  className={`flex-1 text-left text-sm px-2 py-1 rounded hover:bg-muted ${
-                    conversationId === c.id ? "bg-muted" : ""
-                  }`}
-                  onClick={() => loadConversation(c.id)}
-                  disabled={loadingConv || isSending}
-                  title={c.title}
+        {/* Two-column layout (matches landing spacing) */}
+        <div className="flex w-full flex-1 flex-row gap-12 p-12">
+          {/* Right: Sidebar (1/3) */}
+          <div className="flex basis-1/3 flex-col items-stretch">
+            <div className="flex flex-1 flex-col gap-4 rounded-lg bg-zinc-900 p-6 text-white">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="secondary"
+                  onClick={startNewChat}
+                  disabled={isSending}
+                  className="bg-white font-semibold text-black hover:bg-zinc-200"
                 >
-                  {c.title}
-                </button>
-                <button
-                  className="text-xs text-muted-foreground hover:text-foreground px-1"
-                  onClick={() => deleteConversation(c.id)}
-                  title="Delete"
-                >
-                  ×
-                </button>
+                  New chat
+                </Button>
               </div>
-            ))
-          )}
-        </div>
-      </aside>
 
-      {/* Main chat */}
-      <main className="flex-1 flex flex-col p-4 gap-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">Idea Collaborator</h1>
-        </div>
+              {/* Mode selector */}
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-zinc-300">Mode</label>
+                <select
+                  className="flex-1 rounded border-2 border-zinc-800 bg-zinc-900 px-2 py-1 text-sm text-white"
+                  value={mode}
+                  onChange={(e) => setMode(e.target.value as "general" | "game-dev")}
+                  disabled={isSending}
+                >
+                  <option value="general">General</option>
+                  <option value="game-dev">Game design/dev</option>
+                </select>
+              </div>
 
-        <div className="flex-1 overflow-y-auto rounded-md border p-4 space-y-4 bg-background">
-          {messages.length === 0 ? (
-            <div className="text-muted-foreground text-sm">
-              Share your idea. I’ll give feedback and ask probing questions.
+              <div className="text-xs text-zinc-300">Conversations</div>
+              <div className="flex-1 space-y-1 overflow-y-auto">
+                {conversations.length === 0 ? (
+                  <div className="text-xs text-zinc-400">No conversations yet</div>
+                ) : (
+                  conversations.map((c) => (
+                    <div key={c.id} className="flex items-center gap-2">
+                      <button
+                        className={`flex-1 rounded border border-zinc-800 px-2 py-2 text-left text-sm hover:bg-zinc-800 ${
+                          conversationId === c.id ? "bg-zinc-800" : "bg-zinc-900"
+                        }`}
+                        onClick={() => loadConversation(c.id)}
+                        disabled={loadingConv || isSending}
+                        title={c.title}
+                      >
+                        <span className="truncate">{c.title}</span>
+                      </button>
+                      <button
+                        className="px-2 text-xs text-zinc-400 hover:text-white"
+                        onClick={() => deleteConversation(c.id)}
+                        title="Delete"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
-          ) : (
-            messages.map((m, idx) => {
-              const isUser = m.role === "user";
-              return (
-                <div key={idx} className="flex items-start gap-3">
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback>{isUser ? "U" : "AI"}</AvatarFallback>
-                  </Avatar>
-                  <div
-                    className={`rounded-lg px-4 py-2 text-sm leading-relaxed ${
-                      isUser ? "bg-secondary" : "bg-muted"
-                    }`}
-                  >
-                    <Markdown text={m.content} />
-                  </div>
-                </div>
-              );
-            })
-          )}
-          <div ref={endRef} />
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void send();
-          }}
-          className="flex gap-2"
-        >
-          <textarea
-            className="flex-1 resize-none rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            rows={3}
-            placeholder={mode === "game-dev" ? "Pitch your game idea..." : "Describe your idea..."}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={isSending}
-          />
-          <div className="flex flex-col gap-2">
-            <Button type="submit" disabled={!canSend}>
-              {isSending ? "Sending..." : "Send"}
-            </Button>
           </div>
-        </form>
+          {/* Left: Main chat panel (2/3) */}
+          <div className="flex basis-2/3 flex-col gap-6 text-white">
+            <h2 className="text-4xl font-extrabold md:text-5xl">Idea Collaborator</h2>
 
-        <div className="text-[11px] text-muted-foreground">
-          Model: {modelLabel}. Mode: {mode}. Temp 0.4, max 4000 tokens.
+            {/* Chat panel card */}
+            <div className="flex flex-1 flex-col gap-4 rounded-lg bg-slate-800 p-4">
+              {/* Message list */}
+              <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border-2 border-slate-700 bg-slate-800 p-4">
+                {messages.length === 0 ? (
+                  <div className="text-sm text-zinc-300">
+                    Share your idea. I’ll give feedback and ask probing questions.
+                  </div>
+                ) : (
+                  messages.map((m, idx) => {
+                    const isUser = m.role === "user";
+                    return (
+                      <div key={idx} className="flex items-start gap-3">
+                        <Avatar className="mt-1 h-8 w-8">
+                          <AvatarFallback>{isUser ? "U" : "AI"}</AvatarFallback>
+                        </Avatar>
+                        <div
+                          className={`whitespace-pre-wrap rounded-lg border px-4 py-2 text-sm leading-relaxed ${
+                            isUser ? "border-zinc-700 bg-zinc-900" : "border-slate-600 bg-slate-700"
+                          }`}
+                        >
+                          <Markdown text={m.content} />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={endRef} />
+              </div>
+
+              {/* Composer */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void send();
+                }}
+                className="flex gap-2"
+              >
+                <textarea
+                  className="flex-1 resize-none rounded-md border-2 border-slate-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/40"
+                  rows={3}
+                  placeholder={mode === "game-dev" ? "Pitch your game idea..." : "Describe your idea..."}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  disabled={isSending}
+                />
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="submit"
+                    disabled={!canSend}
+                    className="bg-white font-semibold text-black hover:bg-zinc-200"
+                  >
+                    {isSending ? "Sending..." : "Send"}
+                  </Button>
+                </div>
+              </form>
+
+              <div className="text-[11px] text-zinc-300">
+                Model: {modelLabel}. Mode: {mode}. Temp 0.4, max 4000 tokens.
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

@@ -7,16 +7,16 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div className="flex h-24 w-full items-center bg-transparent">
           <h1 className="mx-12 text-3xl font-bold italic text-white">placeholder</h1>
         </div>
-        <div className="flex flex-1 flex-col items-center w-full p-4">
-            <div className="flex bg-zinc-900 rounded-xl w-[512px] flex-col flex-1">
-                <div className="flex w-full flex-row p-6 items-center">
-                    <h1 className="font-bold text-5xl text-white mr-auto">warfarm</h1>
-                    <Avatar className="h-24 w-24">
-                        <AvatarImage src="https://cdn.discordapp.com/avatars/460083959720706048/72e6aa5994b69e83dfc9186aa21e1f40" />
-                        <AvatarFallback></AvatarFallback>
-                    </Avatar>
-                </div>
+        <div className="flex w-full flex-1 flex-col items-center p-4">
+          <div className="flex w-[512px] flex-1 flex-col rounded-xl bg-zinc-900">
+            <div className="flex w-full flex-row items-center p-6">
+              <h1 className="mr-auto text-5xl font-bold text-white">warfarm</h1>
+              <Avatar className="h-24 w-24">
+                <AvatarImage src="https://cdn.discordapp.com/avatars/460083959720706048/72e6aa5994b69e83dfc9186aa21e1f40" />
+                <AvatarFallback></AvatarFallback>
+              </Avatar>
             </div>
+          </div>
         </div>
       </div>
     </main>
