@@ -1,3 +1,4 @@
+"use client"
 import { Post } from "@/components/Post";
 import Image from "next/image";
 import feedback from "../../public/feedback.svg";

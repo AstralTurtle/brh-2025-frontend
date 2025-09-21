@@ -13,6 +13,7 @@ interface CreatePostProps {
 
 export function CreatePost({ onPostCreated }: CreatePostProps) {
     const [content, setContent] = useState("");
+    const [embed, setEmbed] = useState("");
     const [isPosting, setIsPosting] = useState(false);
     const [summary, setSummary] = useState("");
     const [sensitive, setSensitive] = useState(false);
@@ -26,6 +27,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
         try {
             const postData = {
                 content: content.trim(),
+                embed: embed,
                 to: ["https://www.w3.org/ns/activitystreams#Public"],
                 cc: [],
                 ...(summary && { summary }),
@@ -36,6 +38,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
 
             // Clear all form fields after successful post creation
             setContent("");
+            setEmbed("");
             setSummary("");
             setSensitive(false);
             onPostCreated?.();
@@ -64,6 +67,16 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
                                 placeholder="What's happening in your game development journey?"
                                 className="w-full min-h-[100px] p-3 text-white bg-zinc-700 border border-zinc-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent placeholder-zinc-400"
                                 disabled={isPosting}
+                            />
+                        </div>
+
+                        <div>
+                            <input
+                                // type="text"
+                                value={embed}
+                                onChange={(e) => setEmbed(e.target.value)}
+                                placeholder="Embed"
+                                className="w-full p-2 text-white bg-zinc-700 border border-zinc-600 rounded focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent placeholder-zinc-400"
                             />
                         </div>
 
