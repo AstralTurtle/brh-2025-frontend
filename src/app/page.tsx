@@ -46,9 +46,14 @@ export default function Home() {
               </div>
             </div>
 
-            <button className="rounded-full bg-white py-4 text-3xl font-semibold text-black">
-              New Game
-            </button>
+            <div className="flex flex-row gap-8">
+              <a className="rounded-full bg-white py-4 px-8 text-3xl font-semibold text-black" href="/auth/sign-up">
+                New Game
+              </a>
+              <a className="rounded-full bg-white py-4 px-8 text-3xl font-semibold text-black" href="/auth/sign-up">
+                Load Game
+              </a>
+            </div>
           </div>
 
         </div>

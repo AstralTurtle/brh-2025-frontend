@@ -1,5 +1,6 @@
-"use client";
-
+'use client'
+ 
+import { useRouter } from 'next/navigation'
 import { Post } from "@/components/Post";
 import { CreatePost } from "@/components/CreatePost";
 import { Profile } from "@/components/Profile";
@@ -7,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { apiService } from "@/lib/api";
 import { useEffect, useState, useRef, useCallback } from "react";
 import NavBar from "@/components/NavigationBar";
+import { getCookie } from "@/lib/utils";
 
 export type ActivityPubNote = {
   id: string;
   type: 'Note';
   content: string;
+  embed: string;
   published: string;
   attributedTo: string;
   to: string[];
@@ -27,6 +30,7 @@ export type Post = {
   avatar: string;
   date: Date;
   message: string;
+  embed: string;
   media: string[];
 }
 
@@ -36,6 +40,13 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const observer = useRef<IntersectionObserver>();
+  const router = useRouter()
+
+  useEffect(()=>{
+    if (!getCookie("jwt")) {
+      router.replace("/");
+    }
+  })
 
   const lastPostElementRef = useCallback((node: HTMLDivElement) => {
     if (isLoading) return;
@@ -73,7 +84,8 @@ export default function Page({ params }: { params: { slug: string } }) {
         avatar: "",
         message: v.content,
         media: v.attachment || [],
-        date: new Date(v.published)
+        date: new Date(v.published),
+        embed: v.embed
       }));
 
       if (pageNum === 1 || isNewPost) {
@@ -126,6 +138,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                       username={v.username}
                       avatar={v.avatar}
                       date={v.date}
+                      embed={v.embed}
                       message={v.message}
                       media={v.media}
                     />
@@ -140,6 +153,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                     avatar={v.avatar}
                     date={v.date}
                     message={v.message}
+                    embed={v.embed}
                     media={v.media}
                   />
                 );
