@@ -24,9 +24,10 @@ export function Post(props: { username: string; avatar: string; date: Date; mess
           <Carousel className="my-2">
             <CarouselContent>
               {props.media.map((url: string, i: number) => {
+                console.log(url);
                 return (
-                  <CarouselItem className="basis-2/3" key={i}>
-                    <Image className="rounded-xl" src={url} alt="" />
+                  <CarouselItem className="basis-2/3 bg-red-200 h-96" key={i}>
+                    <Image className="rounded-xl" src={url} alt="" fill={true}/>
                   </CarouselItem>
                 );
               })}
