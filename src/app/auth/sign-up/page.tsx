@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { FormEvent } from "react";
+import NavBar from "@/components/NavigationBar";
 
 export default function Page({ params }: { params: { slug: string } }) {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -49,38 +50,32 @@ export default function Page({ params }: { params: { slug: string } }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
-        <div className="flex h-24 w-full items-center bg-transparent">
-          <h1 className="mx-12 text-3xl font-bold italic text-white">Frame One</h1>
-        </div>
+        <NavBar></NavBar>
         <div className="flex w-full flex-1 flex-col items-center p-4">
           <div className="flex flex-1 flex-col gap-4 rounded-xl bg-zinc-900 p-4">
             <div className="flex w-[630px] flex-col justify-center rounded-md border-2 border-slate-700">
               <Card className="w-full">
                 <CardHeader>
                   <CardTitle>Sign up to your account</CardTitle>
-                  <CardDescription>Enter your email below to login to your account</CardDescription>
-                  <Button variant="link">Sign Up</Button>
+                  <CardDescription>Join for free now!</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-6">
                       <div className="grid gap-2">
-                        <Label htmlFor="text">Username</Label>
+                        <label htmlFor="text">Username</label>
                         <input name="username" type="text" placeholder="hello@example.com" required />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
+                        <label htmlFor="password">Password</label>
                         <input name="password" type="password" required />
                       </div>
                       <button type="submit" className="w-full">
-                        Login
+                        Sign up
                       </button>
                     </div>
                   </form>
                 </CardContent>
-                <CardFooter className="flex-col gap-2">
-
-                </CardFooter>
               </Card>
             </div>
           </div>

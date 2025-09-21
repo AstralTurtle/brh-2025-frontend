@@ -8,6 +8,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import NavBar from "@/components/NavigationBar"
+import { getCookie } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 type Role = "user" | "assistant";
 type Msg = { role: Role; content: string; createdAt?: string };
@@ -22,9 +24,16 @@ export default function ChatPage() {
   const [loadingConv, setLoadingConv] = useState(false);
   const [modelLabel, setModelLabel] = useState<string>(process.env.NEXT_PUBLIC_GEMINI_MODEL || "gemini-1.5-flash");
   const [mode, setMode] = useState<"general" | "game-dev">("general");
+  const router = useRouter();
 
   const endRef = useRef<HTMLDivElement>(null);
   const canSend = input.trim().length > 0 && !isSending;
+
+  useEffect(()=>{
+    if (!getCookie("jwt")) {
+      router.replace("/");
+    }
+  })
 
   const refreshConversations = useCallback(async () => {
     const res = await fetch("/api/chat/conversations", { cache: "no-store" });

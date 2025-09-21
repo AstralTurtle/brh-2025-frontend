@@ -1,5 +1,6 @@
-"use client";
-
+'use client'
+ 
+import { useRouter } from 'next/navigation'
 import { Post } from "@/components/Post";
 import { CreatePost } from "@/components/CreatePost";
 import { Profile } from "@/components/Profile";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { apiService } from "@/lib/api";
 import { useEffect, useState, useRef, useCallback } from "react";
 import NavBar from "@/components/NavigationBar";
+import { getCookie } from "@/lib/utils";
 
 export type ActivityPubNote = {
   id: string;
@@ -38,6 +40,13 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const observer = useRef<IntersectionObserver>();
+  const router = useRouter()
+
+  useEffect(()=>{
+    if (!getCookie("jwt")) {
+      router.replace("/");
+    }
+  })
 
   const lastPostElementRef = useCallback((node: HTMLDivElement) => {
     if (isLoading) return;
