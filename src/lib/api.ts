@@ -38,6 +38,47 @@ export const apiService = {
         return response.data;
     },
 
+    // Utility function to get display name for a username
+    async getDisplayName(username: string): Promise<string> {
+        try {
+            const userData = await this.getUser(username);
+            return userData.display_name || userData.username || username;
+        } catch (error) {
+            console.error('Error fetching display name:', error);
+            return username; // Fallback to username if API call fails
+        }
+    },
+
+    // Follow/Unfollow endpoints
+    async followUser(username: string) {
+        const response = await axios.post(`${API_BASE_URL}/users/${username}/follow`, {}, {
+            headers: getAuthHeaders()
+        });
+        return response.data;
+    },
+
+    async unfollowUser(username: string) {
+        const response = await axios.delete(`${API_BASE_URL}/users/${username}/follow`, {
+            headers: getAuthHeaders()
+        });
+        return response.data;
+    },
+
+    async getUserFollowers(username: string) {
+        const response = await axios.get(`${API_BASE_URL}/users/${username}/followers`);
+        return response.data;
+    },
+
+    async getUserFollowing(username: string) {
+        const response = await axios.get(`${API_BASE_URL}/users/${username}/following`);
+        return response.data;
+    },
+
+    async checkFollowStatus(username: string, targetUsername: string) {
+        const response = await axios.get(`${API_BASE_URL}/users/${username}/follow-status/${targetUsername}`);
+        return response.data;
+    },
+
     // Post endpoints
     async getPosts(page: number = 1, limit: number = 10) {
         const response = await axios.get(`${API_BASE_URL}/posts/?page=${page}&limit=${limit}`);
@@ -79,5 +120,22 @@ export const apiService = {
         const uuid = extractPostUuid(postId);
         const response = await axios.get(`${API_BASE_URL}/posts/${uuid}/likes`);
         return response.data;
+    },
+
+    // Get posts by a specific user
+    async getUserPosts(username: string, page: number = 1, limit: number = 10) {
+        // Filter posts by the user's ActivityPub ID
+        const userResponse = await this.getUser(username);
+        const userId = userResponse.id;
+
+        const response = await axios.get(`${API_BASE_URL}/posts/?page=${page}&limit=${limit}`);
+
+        // Filter posts by this user's ID
+        const userPosts = response.data.posts?.filter((post: any) => post.attributedTo === userId) || [];
+
+        return {
+            ...response.data,
+            posts: userPosts
+        };
     }
 };
