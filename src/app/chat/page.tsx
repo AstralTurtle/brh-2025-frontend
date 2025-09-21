@@ -29,7 +29,7 @@ export default function ChatPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const canSend = input.trim().length > 0 && !isSending;
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!getCookie("jwt")) {
       router.replace("/");
     }
@@ -171,7 +171,8 @@ export default function ChatPage() {
           th: (props) => <th className="border px-2 py-1 text-left" {...props} />,
           td: (props) => <td className="border px-2 py-1 align-top" {...props} />,
           // Code blocks and inline code
-          code({ inline, className, children, ...props }) {
+          code({ className, children, ...props }: any) {
+            const inline = !className;
             const match = /language-(\w+)/.exec(className || "");
             if (!inline) {
               return (
@@ -243,9 +244,8 @@ export default function ChatPage() {
                   conversations.map((c) => (
                     <div key={c.id} className="flex items-center gap-2">
                       <button
-                        className={`flex-1 rounded border border-zinc-800 px-2 py-2 text-left text-sm hover:bg-zinc-800 ${
-                          conversationId === c.id ? "bg-zinc-800" : "bg-zinc-900"
-                        }`}
+                        className={`flex-1 rounded border border-zinc-800 px-2 py-2 text-left text-sm hover:bg-zinc-800 ${conversationId === c.id ? "bg-zinc-800" : "bg-zinc-900"
+                          }`}
                         onClick={() => loadConversation(c.id)}
                         disabled={loadingConv || isSending}
                         title={c.title}
@@ -286,9 +286,8 @@ export default function ChatPage() {
                           <AvatarFallback>{isUser ? "U" : "AI"}</AvatarFallback>
                         </Avatar>
                         <div
-                          className={`whitespace-pre-wrap rounded-lg border px-4 py-2 text-sm leading-relaxed ${
-                            isUser ? "border-zinc-700 bg-zinc-900" : "border-slate-600 bg-slate-700"
-                          }`}
+                          className={`whitespace-pre-wrap rounded-lg border px-4 py-2 text-sm leading-relaxed ${isUser ? "border-zinc-700 bg-zinc-900" : "border-slate-600 bg-slate-700"
+                            }`}
                         >
                           <Markdown text={m.content} />
                         </div>

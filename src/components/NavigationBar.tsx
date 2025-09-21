@@ -13,6 +13,7 @@ export default function NavigationBar() {
       <a className="text-3xl font-bold italic text-white mr-12" href="/">Frame One</a>
       <a className="text-xl text-white bg-slate-900 rounded-lg py-4 px-8 font-semibold" href="/chat">Chat</a>
       <a className="text-xl text-white bg-slate-900 rounded-lg py-4 px-8 font-semibold" href="/feed">Scroll</a>
+      <a className="text-xl text-white bg-slate-900 rounded-lg py-4 px-8 font-semibold" href="/search">Search</a>
     </div>
   );
 }

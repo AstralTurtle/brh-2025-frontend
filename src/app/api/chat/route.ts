@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const userMsg: ChatMessage = { role: "user", content: message, createdAt: new Date() };
     await conversations.updateOne(
       { _id: convId, userId: auth.userId },
-      { $push: { messages: userMsg }, $set: { updatedAt: new Date() } },
+      { $push: { messages: userMsg } as any, $set: { updatedAt: new Date() } },
     );
 
     const doc = await conversations.findOne({ _id: convId, userId: auth.userId });
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         await conversations.updateOne(
           { _id: convId, userId: auth.userId },
           {
-            $push: { messages: assistantMsg },
+            $push: { messages: assistantMsg } as any,
             $set: {
               updatedAt: new Date(),
               ...(doc?.title ? {} : { title: assistantText.split(".")[0]?.slice(0, 60) ?? "New chat" }),

@@ -172,7 +172,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
             {!hasMore && posts.length > 0 && (
               <div className="flex justify-center items-center p-8">
-                <div className="text-zinc-400">You've reached the end of the feed</div>
+                <div className="text-zinc-400">You&apos;ve reached the end of the feed</div>
               </div>
             )}
           </div>
