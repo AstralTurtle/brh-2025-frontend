@@ -137,5 +137,83 @@ export const apiService = {
             ...response.data,
             posts: userPosts
         };
+    },
+
+    // Search endpoints
+    async searchUsers(query: string, limit: number = 20) {
+        const response = await axios.get(`${API_BASE_URL}/users/search`, {
+            params: { q: query, limit },
+            headers: getAuthHeaders()
+        });
+
+        // Backend returns 'results' but frontend expects 'users', so we normalize it
+        const users = response.data.results || [];
+
+        // For remote users, try to fetch their full ActivityPub profile to get avatars
+        const enrichedUsers = await Promise.all(users.map(async (user: any) => {
+            if (user.is_local === false && user.id) {
+                try {
+                    // Fetch the full ActivityPub profile directly
+                    const profileResponse = await axios.get(user.id, {
+                        headers: {
+                            'Accept': 'application/activity+json'
+                        },
+                        timeout: 5000 // 5 second timeout for external requests
+                    });
+
+                    const fullProfile = profileResponse.data;
+                    return {
+                        ...user,
+                        icon: fullProfile.icon?.url || fullProfile.icon,
+                        image: fullProfile.image?.url || fullProfile.image, // header image
+                        // Also update other fields that might be more complete in the full profile
+                        summary: fullProfile.summary || user.summary,
+                        name: fullProfile.name || user.name
+                    };
+                } catch (error) {
+                    console.warn(`Failed to fetch full profile for ${user.id}:`, error);
+                    // Return user as-is if we can't fetch the full profile
+                    return user;
+                }
+            }
+            return user;
+        }));
+
+        return {
+            ...response.data,
+            users: enrichedUsers
+        };
+    },
+
+    async webfingerLookup(account: string) {
+        try {
+            // Handle account format like user@domain.com or @user@domain.com
+            const cleanAccount = account.startsWith('@') ? account.substring(1) : account;
+
+            if (!cleanAccount.includes('@')) {
+                throw new Error('Invalid account format. Use user@domain.com');
+            }
+
+            const response = await axios.get(`${API_BASE_URL}/.well-known/webfinger`, {
+                params: { resource: `acct:${cleanAccount}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Webfinger lookup failed:', error);
+            throw error;
+        }
+    },
+
+    async resolveRemoteUser(actorUrl: string) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/users/resolve`,
+                { actor_url: actorUrl },
+                { headers: getAuthHeaders() }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Remote user resolution failed:', error);
+            throw error;
+        }
     }
 };
