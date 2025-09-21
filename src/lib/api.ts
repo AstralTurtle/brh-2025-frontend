@@ -29,6 +29,12 @@ export const apiService = {
         return response.data;
     },
 
+    async getReplies(postId: string) {
+        // Fetch posts that reply to this post
+        const response = await axios.get(`${API_BASE_URL}/posts/?in_reply_to=${postId}`);
+        return response.data;
+    },
+
     async createPost(postData: {
         content: string;
         to?: string[];

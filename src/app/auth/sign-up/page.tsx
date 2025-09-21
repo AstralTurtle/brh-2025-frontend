@@ -50,7 +50,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
         <div className="flex h-24 w-full items-center bg-transparent">
-          <h1 className="mx-12 text-3xl font-bold italic text-white">frame one</h1>
+          <h1 className="mx-12 text-3xl font-bold italic text-white">Frame One</h1>
         </div>
         <div className="flex w-full flex-1 flex-col items-center p-4">
           <div className="flex flex-1 flex-col gap-4 rounded-xl bg-zinc-900 p-4">

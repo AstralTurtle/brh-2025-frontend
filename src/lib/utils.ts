@@ -37,3 +37,53 @@ export function getCookie(name: string): string | null {
   console.log(`Cookie "${name}" not found`);
   return null;
 }
+
+// DiceBear avatar cache and rate limiting
+const avatarCache = new Map<string, string>();
+const avatarQueue: string[] = [];
+let isProcessingQueue = false;
+
+export function getDiceBearAvatar(username: string): string {
+  // Return cached avatar if available
+  if (avatarCache.has(username)) {
+    return avatarCache.get(username)!;
+  }
+
+  // Generate avatar URL
+  const avatarUrl = `https://api.dicebear.com/7.x/avataaars-neutral/svg?seed=${encodeURIComponent(username)}`;
+
+  // Cache the avatar URL
+  avatarCache.set(username, avatarUrl);
+
+  // Add to queue for preloading (respecting rate limits)
+  if (!avatarQueue.includes(username)) {
+    avatarQueue.push(username);
+    processAvatarQueue();
+  }
+
+  return avatarUrl;
+}
+
+async function processAvatarQueue() {
+  if (isProcessingQueue || avatarQueue.length === 0) return;
+
+  isProcessingQueue = true;
+
+  while (avatarQueue.length > 0) {
+    const username = avatarQueue.shift()!;
+    const avatarUrl = avatarCache.get(username)!;
+
+    try {
+      // Preload the image
+      const img = new Image();
+      img.src = avatarUrl;
+    } catch (error) {
+      console.log(`Failed to preload avatar for ${username}`);
+    }
+
+    // Rate limit: wait 100ms between requests
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  isProcessingQueue = false;
+}

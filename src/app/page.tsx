@@ -9,7 +9,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-violet-600 to-indigo-600">
 
       <div className="flex flex-row gap-12 px-12 py-6">
-        <h1 className="text-3xl font-bold italic text-white">frame one</h1>
+        <h1 className="text-3xl font-bold italic text-white">Frame One</h1>
       </div>
 
       <div className="flex flex-row gap-12 p-12 grow">
@@ -64,7 +64,7 @@ export default function Home() {
               }
               media={[]}
             ></Post>
-                       <Post
+            <Post
               username={"astralturtle"}
               avatar={"https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e"}
               date={new Date()}
@@ -73,7 +73,7 @@ export default function Home() {
               }
               media={[]}
             ></Post>
-                       <Post
+            <Post
               username={"astralturtle"}
               avatar={"https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e"}
               date={new Date()}
@@ -82,7 +82,7 @@ export default function Home() {
               }
               media={[]}
             ></Post>
-                       <Post
+            <Post
               username={"astralturtle"}
               avatar={"https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e"}
               date={new Date()}
@@ -91,7 +91,7 @@ export default function Home() {
               }
               media={[]}
             ></Post>
-                       <Post
+            <Post
               username={"astralturtle"}
               avatar={"https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e"}
               date={new Date()}
@@ -100,7 +100,7 @@ export default function Home() {
               }
               media={[]}
             ></Post>
-                       <Post
+            <Post
               username={"astralturtle"}
               avatar={"https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e"}
               date={new Date()}
@@ -109,7 +109,7 @@ export default function Home() {
               }
               media={[]}
             ></Post>
-                      
+
           </div>
         </div>
       </div>
