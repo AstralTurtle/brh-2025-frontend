@@ -1,16 +1,16 @@
+"use client";
+
 import { Post } from "@/components/Post";
 import Image from "next/image";
 import feedback from "../../public/feedback.svg";
 import groups from "../../public/groups.svg";
 import share from "../../public/share.svg";
+import NavBar from "@/components/NavigationBar";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-violet-600 to-indigo-600">
-
-      <div className="flex flex-row gap-12 px-12 py-6">
-        <h1 className="text-3xl font-bold italic text-white">Frame One</h1>
-      </div>
+      <NavBar></NavBar>
 
       <div className="flex flex-row gap-12 p-12 grow">
         <div className="basis-2/3">

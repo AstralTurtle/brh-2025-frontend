@@ -6,6 +6,7 @@ import { Profile } from "@/components/Profile";
 import { Button } from "@/components/ui/button";
 import { apiService } from "@/lib/api";
 import { useEffect, useState, useRef, useCallback } from "react";
+import NavBar from "@/components/NavigationBar";
 
 export type ActivityPubNote = {
   id: string;
@@ -110,9 +111,8 @@ export default function Page({ params }: { params: { slug: string } }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
-        <div className="flex h-24 w-full items-center bg-transparent">
-          <h1 className="mx-12 text-3xl font-bold italic text-white">Frame One</h1>
-        </div>
+
+        <NavBar></NavBar>
         <div className="flex w-full flex-1 flex-col items-center p-4">
           <div className="flex flex-1 flex-col gap-4 rounded-xl bg-zinc-900 p-4 max-w-2xl w-full">
             <CreatePost onPostCreated={handlePostCreated} />
