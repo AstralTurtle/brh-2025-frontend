@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { SearchBar } from "@/components/SearchBar";
-import { UserResult, UserSearchResult } from "@/components/UserResult";
+import SearchBar from "@/components/SearchBar";
+import UserResult from "@/components/UserResult";
 import NavigationBar from "@/components/NavigationBar";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";

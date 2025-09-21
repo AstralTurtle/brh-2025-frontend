@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -27,7 +29,13 @@ interface UserPost {
   attachment: string[];
 }
 
-export function Profile(props: { username?: string }) {
+export function Profile(props: {
+  username: string;
+  // Add these if not already present in your props
+  slug?: string; // unique profile slug
+  followers?: number; // initial follower count
+  isFollowing?: boolean; // initial follow state
+}) {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
@@ -36,6 +44,11 @@ export function Profile(props: { username?: string }) {
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [postsLoading, setPostsLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState<ProfileData | null>(null);
+
+  // Optimistic follow state
+  const [optimisticFollowing, setOptimisticFollowing] = useState<boolean>(!!props.isFollowing);
+  const [optimisticFollowers, setOptimisticFollowers] = useState<number>(props.followers ?? 0);
+  const [isMutatingFollow, setIsMutatingFollow] = useState(false);
 
   // Helper function to extract host from ActivityPub ID
   const extractHost = (id: string): string => {
@@ -170,6 +183,52 @@ export function Profile(props: { username?: string }) {
     }
   };
 
+  // Keep in sync if props change from server navigation
+  useEffect(() => {
+    if (typeof props.isFollowing === "boolean") setOptimisticFollowing(props.isFollowing);
+    if (typeof props.followers === "number") setOptimisticFollowers(props.followers);
+  }, [props.isFollowing, props.followers]);
+
+  const toggleFollow = async () => {
+    if (isMutatingFollow) return;
+
+    const previous = {
+      following: optimisticFollowing,
+      followers: optimisticFollowers,
+    };
+
+    // Optimistically flip follow + adjust count
+    const nextFollowing = !previous.following;
+    const nextFollowers = previous.followers + (nextFollowing ? 1 : -1);
+
+    setOptimisticFollowing(nextFollowing);
+    setOptimisticFollowers(Math.max(0, nextFollowers));
+    setIsMutatingFollow(true);
+
+    try {
+      // Adjust endpoint/method to match your API
+      const id = props.slug || props.username;
+      const method = nextFollowing ? "POST" : "DELETE";
+      const res = await fetch(`/api/profile/${encodeURIComponent(id)}/follow`, {
+        method,
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error(`Follow toggle failed: ${res.status}`);
+      // Optionally reconcile with server response here if it returns counts
+      // const data = await res.json();
+      // setOptimisticFollowing(data.isFollowing);
+      // setOptimisticFollowers(data.followers);
+    } catch (err) {
+      // Revert on error
+      setOptimisticFollowing(previous.following);
+      setOptimisticFollowers(previous.followers);
+      // Optionally show a toast/snackbar here
+      // toast.error("Could not update follow status");
+    } finally {
+      setIsMutatingFollow(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="w-full p-6 bg-zinc-800 border-zinc-700">
@@ -225,7 +284,7 @@ export function Profile(props: { username?: string }) {
                 <span className="font-bold text-white">{profileData.posts_count || userPosts.length}</span> Posts
               </div>
               <div className="text-zinc-300">
-                <span className="font-bold text-white">{profileData.followers_count || 0}</span> Followers
+                <span className="font-bold text-white">{optimisticFollowers}</span> Followers
               </div>
               <div className="text-zinc-300">
                 <span className="font-bold text-white">{profileData.following_count || 0}</span> Following
@@ -236,14 +295,14 @@ export function Profile(props: { username?: string }) {
               <div className="pt-3">
                 {currentUserData ? (
                   <Button
-                    onClick={handleFollowToggle}
-                    disabled={isFollowLoading}
+                    onClick={toggleFollow}
+                    disabled={isFollowLoading || isMutatingFollow}
                     className={isFollowing
                       ? "bg-zinc-600 hover:bg-zinc-700 text-white"
                       : "bg-violet-600 hover:bg-violet-700 text-white"
                     }
                   >
-                    {isFollowLoading ? "Loading..." : isFollowing ? "Unfollow" : "Follow"}
+                    {isFollowLoading || isMutatingFollow ? "Loading..." : isFollowing ? "Unfollow" : "Follow"}
                   </Button>
                 ) : (
                   <Button

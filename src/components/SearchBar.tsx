@@ -1,52 +1,59 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Search as SearchIcon } from "lucide-react";
 
 interface SearchBarProps {
-    onSearch?: (query: string) => void;
-    placeholder?: string;
-    className?: string;
+  onSearch?: (query: string) => void;
+  className?: string;
+  size?: "md" | "lg";
+  placeholder?: string;
 }
 
-export function SearchBar({ onSearch, placeholder = "Search users...", className = "" }: SearchBarProps) {
-    const [query, setQuery] = useState("");
-    const router = useRouter();
+export default function SearchBar({ 
+  onSearch, 
+  className = "", 
+  size = "md", 
+  placeholder = "Search users..." 
+}: SearchBarProps) {
+  const [query, setQuery] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (query.trim()) {
-            if (onSearch) {
-                onSearch(query.trim());
-            } else {
-                // Navigate to search page with query
-                router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-            }
-        }
-    };
+  const sizeClasses = size === "lg" ? "h-14 text-xl pl-11 pr-4" : "h-10 text-base pl-10 pr-3";
 
-    return (
-        <form onSubmit={handleSubmit} className={`flex gap-2 ${className}`}>
-            <div className="relative flex-1">
-                <Input
-                    type="text"
-                    placeholder={placeholder}
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-zinc-400"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-4 h-4" />
-            </div>
-            <Button
-                type="submit"
-                variant="secondary"
-                className="bg-violet-600 hover:bg-violet-700 text-white"
-            >
-                Search
-            </Button>
-        </form>
-    );
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      onSearch?.(query.trim());
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (query.trim()) {
+        onSearch?.(query.trim());
+      }
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className={`w-full ${className}`}>
+      <div className="relative">
+        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+        <input
+          type="text"
+          value={query}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className={`w-full rounded-xl bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/40 ${sizeClasses}`}
+        />
+      </div>
+    </form>
+  );
 }

@@ -61,11 +61,11 @@ export default function Page({ params }: { params: { slug: string } }) {
                     <div className="flex flex-col gap-6">
                       <div className="grid gap-2">
                         <label htmlFor="text">Username</label>
-                        <input className="border-2 border-slate-700 bg-zinc-800 p-2 rounded-md" name="username" type="text" placeholder="MyUsername" required />
+                        <input className="text-black border-2 border-slate-700 bg-zinc-800 p-2 rounded-md" name="username" type="text" placeholder=" MyUsername" required />
                       </div>
                       <div className="grid gap-2">
                         <label htmlFor="password">Password</label>
-                        <input className="border-2 border-slate-700 bg-zinc-800 p-2 rounded-md" name="password" type="password" placeholder="MyS3cureP@ssw0rd" required />
+                        <input className="text-black border-2 border-slate-700 bg-zinc-800 p-2 rounded-md" name="password" type="password" placeholder=" MyS3cureP@ssw0rd" required />
                       </div>
                       <button type="submit" className="w-full">
                         Sign in

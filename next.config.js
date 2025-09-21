@@ -7,12 +7,6 @@ module.exports = {
         port: '',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'tenor.com',
-        port: '',
-        pathname: '/**',
-      },
     ],
   },
 }

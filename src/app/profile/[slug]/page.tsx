@@ -1,19 +1,29 @@
-"use client"
 import { Post } from "@/components/Post";
 import { Profile } from "@/components/Profile";
 import NavBar from "@/components/NavigationBar";
+import RemoteProfileClient from "@/components/RemoteProfileClient";
 
-export default function Page({ params }: { params: { slug: string } }) {
+type PageProps = {
+  params: { slug: string };
+  searchParams?: { remote?: string };
+};
+
+export default async function ProfilePage({ params, searchParams }: PageProps) {
+  const decoded = decodeURIComponent(params.slug);
+  const isRemote = searchParams?.remote === "1"; // only remote when explicitly flagged
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
-        <NavBar />
-        <div className="flex w-full flex-1 flex-col items-center p-4">
-          <div className="flex flex-1 flex-col gap-4 rounded-xl bg-zinc-900 p-4">
-            <Profile username={params.slug} />
-          </div>
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-violet-600 to-indigo-600">
+      <NavBar />
+      <div className="p-6">
+        <div className="rounded-2xl bg-zinc-900 p-6 text-white">
+          {isRemote ? (
+            <RemoteProfileClient actorHint={decoded} />
+          ) : (
+            <div>Loading profile…</div>
+          )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -9,49 +9,65 @@ import NavBar from "@/components/NavigationBar";
 import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const animationFrameRef = useRef<number>();
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)            // NEW: wrapper for duplicated content
+  const singleSetHeightRef = useRef(0)                     // NEW: height of one copy
+  const [isPaused, setIsPaused] = useState(false)
+  const animationFrameRef = useRef<number>()
 
-  // Auto-scroll functionality
+  // Measure height of a single set (handles image loads and responsive layout)
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
+    const inner = innerRef.current
+    if (!inner) return
 
-    const scrollSpeed = 3; // pixels per frame
-    let lastTime = 0;
+    const measure = () => {
+      // We render two copies; one set is half the full height
+      singleSetHeightRef.current = inner.scrollHeight / 2
+    }
 
-    const autoScroll = (currentTime: number) => {
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(inner)
+
+    return () => {
+      ro.disconnect()
+    }
+  }, [])
+  
+  // Auto-scroll with seamless loop (no snap)
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    // Ensure no smooth animation on programmatic jumps
+    container.style.scrollBehavior = "auto"
+
+    const scrollSpeed = 3 // px per frame
+    let lastTime = 0
+
+    const tick = (t: number) => {
       if (!isPaused && container) {
-        // Only scroll if enough time has passed (throttle to ~60fps)
-        if (currentTime - lastTime >= 16) {
-          const maxScrollTop = container.scrollHeight - container.clientHeight;
-
-          if (container.scrollTop >= maxScrollTop) {
-            // Reset to top for infinite loop
-            container.scrollTop = 0;
-          } else {
-            // Scroll down smoothly
-            container.scrollTop += scrollSpeed;
+        if (t - lastTime >= 16) {
+          const setH = singleSetHeightRef.current
+          if (setH > 0) {
+            // When past one set, jump back by exactly one set height
+            if (container.scrollTop >= setH) {
+              container.scrollTop -= setH
+            } else {
+              container.scrollTop += scrollSpeed
+            }
           }
-          lastTime = currentTime;
+          lastTime = t
         }
       }
+      animationFrameRef.current = requestAnimationFrame(tick)
+    }
 
-      // Continue the animation loop
-      animationFrameRef.current = requestAnimationFrame(autoScroll);
-    };
-
-    // Start the animation loop
-    animationFrameRef.current = requestAnimationFrame(autoScroll);
-
-    // Cleanup
+    animationFrameRef.current = requestAnimationFrame(tick)
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isPaused]);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
+    }
+  }, [isPaused])
 
   // Prevent manual scrolling
   const handleScroll = (e: React.UIEvent) => {
@@ -96,7 +112,7 @@ export default function Home() {
         "https://cdn.discordapp.com/attachments/1418773209951633512/1419251608851709992/6dd64832e621ff348935216b4d4bd993587f783c_full.png?ex=68d1148f&is=68cfc30f&hm=a9c6ed2cc3c8e64ad860fb03d57216afaa5bfd90ff1260a18aba5f9dee4f93ea&",
       date: new Date(),
       message:
-        "We're excited to announce that Hollow Knight: Silksong is coming soon! Explore a vast, new kingdom filled with challenging enemies, intricate platforming, and a captivating story. Stay tuned for more updates!",
+        "# Release soon! \nWe're excited to announce that Hollow Knight: Silksong is **coming soon**! \n\nExplore a vast, new kingdom filled with challenging enemies, intricate platforming, and a captivating story. \n\nStay tuned for more updates!",
       media: [
         "https://cdn.discordapp.com/attachments/1418773209951633512/1419253774932902020/latest.png?ex=68d11694&is=68cfc514&hm=d907cb6d8c0d28db13a90bd67995a373c8ccbed4468973a49f1dc877373f154e&",
         "https://cdn.discordapp.com/attachments/1418773209951633512/1419251961366057091/header.png?ex=68d114e4&is=68cfc364&hm=1dc6fcb9c53d88401c0dcdfe9975e865d5b0afde924461de1caa996e484e42ea&",
@@ -109,43 +125,43 @@ export default function Home() {
         "https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e",
       date: new Date(),
       message:
-        "Anyone want to do **Pirate Jam** together? Looking for teammates with Godot experience and music expertise. Let's make something amazing!\n```py\ndef findTeammates(devs):\n\treturn [dev for dev in devs if 'godot' in dev.skills]\n```",
+        "Anyone want to do **Pirate Jam** together? \n\nLooking for teammates with *Godot experience* and *music expertise*. Let's make something amazing!\n```py\ndef findTeammates(devs):\n\treturn [dev for dev in devs if 'godot' in dev.skills]\n```",
       media: [],
     },
     {
-      username: "GameDevStudio",
+      username: "LunarPixelAdventures",
       avatar:
         "https://cdn.discordapp.com/attachments/1418773209951633512/1419262550461120583/Pixel_Art.png?ex=68d11ec0&is=68cfcd40&hm=b78ca091516a1442c06d6d5360d6eaf9d96539667f58392f7727b6968ee44e34&",
       date: new Date(),
       message:
-        "Just released our latest indie platformer! \n\nThanks to everyone who provided feedback during development.  Your input was invaluable! \n\nCheck it out [here](https://www.store.steampowered.com)",
+        "## Just released our latest indie platformer! \n\nThanks to everyone who provided feedback during development. Your input was invaluable! \n\nCheck it out [here](https://www.store.steampowered.com)",
       media: ["https://cdn.discordapp.com/attachments/1418773209951633512/1419262550461120583/Pixel_Art.png?ex=68d11ec0&is=68cfcd40&hm=b78ca091516a1442c06d6d5360d6eaf9d96539667f58392f7727b6968ee44e34&"],
+    },
+    {
+      username: "Physics.Fiendd",
+      avatar:
+        "https://cdn.discordapp.com/attachments/1418773209951633512/1419272326507401266/07c1267fd52a140ef7d7e8184832eb38.png?ex=68d127db&is=68cfd65b&hm=7d8f19b2d564efa34c43b95d5d709727464040a371881e02d192faaec08440e5&",
+      date: new Date(),
+      message:
+        "Finally figured out that tricky physics bug! \nMy characters no longer clip through walls! \n\nSometimes you just need to step away and come back with fresh eyes👀",
+      media: [],
     },
     {
       username: "PixelArtist",
       avatar:
-        "https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e",
+        "https://cdn.discordapp.com/attachments/1418773209951633512/1419271835387957298/pixel-art-cat-260nw-1343317838.png?ex=68d12766&is=68cfd5e6&hm=9b5cc11649dc4892b33c51c3ad9d01391104f6b887e7bab5fb9e7ebabb4444f5&",
       date: new Date(),
       message:
-        "Working on some character sprites for my upcoming RPG. What do you think of this animation cycle?",
-      media: [],
+        "Working on some scenes for my upcoming RPG. \n\nWhat do you think of this scene?\n\n**#indiedev #pixelart**",
+      media: ["https://cdn.discordapp.com/attachments/1418773209951633512/1419271541669101630/Killer-Rabbit-Solarpunk-pixel-art-feature-image.png?ex=68d12720&is=68cfd5a0&hm=6f2fe87d8e09165d18933d030e53e3ad4208004bdd2d316ab1e846940e52c315&"],
     },
     {
-      username: "IndieGameDev",
+      username: "iLove_Otamatones",
       avatar:
-        "https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e",
+        "https://cdn.discordapp.com/attachments/1418773209951633512/1419272982152482832/4392-otamatone-kirby-version-musical-toy-1.png?ex=68d12877&is=68cfd6f7&hm=f7ef92106e9c5fca2b2dd5f567fd2337835d905f570d601442b9b51ae7584a2d&",
       date: new Date(),
       message:
-        "Finally figured out that tricky physics bug! Sometimes you just need to step away and come back with fresh eyes.",
-      media: [],
-    },
-    {
-      username: "MusicComposer",
-      avatar:
-        "https://cdn.discordapp.com/avatars/196269131144626176/4ece9a42ad4fc33ae1dd6fad18d0bb7e",
-      date: new Date(),
-      message:
-        "Composing the soundtrack for a space exploration game. Here's a preview of the main theme!",
+        "Composing the soundtrack for a space exploration game. \n\nHere's a preview of the main theme! \n[SoundCloud Link](https://soundcloud.com)",
       media: [],
     },
   ];
@@ -234,22 +250,26 @@ export default function Home() {
         <div className="basis-1/3">
           <div
             ref={scrollContainerRef}
-            className="flex flex-col gap-4 overflow-hidden rounded-lg bg-slate-800 p-4 h-full max-h-[800px] pointer-events-none"
-            onScroll={handleScroll}
-            onWheel={handleWheel}
-            onKeyDown={handleKeyDown}
-            tabIndex={-1}
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              userSelect: "none",
-            }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            className="flex flex-col gap-4 overflow-hidden rounded-lg bg-slate-800 p-4 h-full max-h-[800px]"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            <div className="pointer-events-auto">
+            <div ref={innerRef}>
+              {/* Render two copies for seamless loop */}
               {duplicatedPosts.map((post, index) => (
                 <div key={`${post.username}-${index}`} className="mb-4">
+                  <Post
+                    username={post.username}
+                    avatar={post.avatar}
+                    date={post.date}
+                    message={post.message}
+                    media={post.media}
+                  />
+                </div>
+              ))}
+              {/* Duplicate the same list again immediately after */}
+              {duplicatedPosts.map((post, index) => (
+                <div key={`${post.username}-${index}-dup`} className="mb-4">
                   <Post
                     username={post.username}
                     avatar={post.avatar}
