@@ -9,7 +9,7 @@ import { apiService } from "@/lib/api";
 
 interface ReplyComponentProps {
     postId: string;
-    onReplyCreated?: () => void;
+    onReplyCreated?: (replyContent?: string) => void;
     onCancel?: () => void;
 }
 
@@ -21,22 +21,28 @@ export function ReplyComponent({ postId, onReplyCreated, onCancel }: ReplyCompon
         e.preventDefault();
         if (!content.trim()) return;
 
+        // Optimistic update - immediately notify parent and clear form
+        const replyContent = content.trim();
+        setContent("");
         setIsReplying(true);
+
+        // Call onReplyCreated immediately for optimistic UI update
+        onReplyCreated?.(replyContent);
 
         try {
             const replyData = {
-                content: content.trim(),
+                content: replyContent,
                 to: ["https://www.w3.org/ns/activitystreams#Public"],
                 cc: [],
                 in_reply_to: postId
             };
 
             await apiService.createPost(replyData);
-
-            setContent("");
-            onReplyCreated?.();
+            // Success - optimistic update was correct
         } catch (error) {
             console.error('Error creating reply:', error);
+            // On error, restore the content so user can retry
+            setContent(replyContent);
         } finally {
             setIsReplying(false);
         }

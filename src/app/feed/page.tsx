@@ -61,10 +61,12 @@ export default function Page({ params }: { params: { slug: string } }) {
         return;
       }
 
-      // Reverse the posts array to show newest first
-      const reversedData = [...data].reverse();
+      // Sort posts by published date (newest first)
+      const sortedData = [...data].sort((a, b) =>
+        new Date(b.published).getTime() - new Date(a.published).getTime()
+      );
 
-      const arr: Post[] = reversedData.map((v: ActivityPubNote) => ({
+      const arr: Post[] = sortedData.map((v: ActivityPubNote) => ({
         id: v.id,
         username: v.attributedTo,
         avatar: "",
@@ -76,7 +78,11 @@ export default function Page({ params }: { params: { slug: string } }) {
       if (pageNum === 1 || isNewPost) {
         setPosts(arr);
       } else {
-        setPosts(prevPosts => [...prevPosts, ...arr]);
+        // When appending more posts, we need to merge and sort the entire list
+        setPosts(prevPosts => {
+          const allPosts = [...prevPosts, ...arr];
+          return allPosts.sort((a, b) => b.date.getTime() - a.date.getTime());
+        });
       }
 
       setHasMore(data.length === 10);

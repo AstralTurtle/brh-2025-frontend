@@ -84,24 +84,52 @@ export function Post(props: {
   const handleLike = async () => {
     if (!props.id || isLiking) return;
 
+    // Optimistic update - update UI immediately
+    const wasLiked = isLiked;
+    const previousCount = likeCount;
+
+    setIsLiked(!wasLiked);
+    setLikeCount(prev => wasLiked ? prev - 1 : prev + 1);
     setIsLiking(true);
+
     try {
       await apiService.likePost(props.id);
-      setIsLiked(!isLiked);
-      setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+      // Success - optimistic update was correct, no need to change anything
     } catch (error) {
       console.error('Error liking post:', error);
+      // Rollback optimistic update on error
+      setIsLiked(wasLiked);
+      setLikeCount(previousCount);
     } finally {
       setIsLiking(false);
     }
   };
 
-  const handleReplyCreated = () => {
+  const handleReplyCreated = (replyContent?: string) => {
+    // Optimistic update - increment reply count and add optimistic reply immediately
+    setReplyCount(prev => prev + 1);
     setShowReplyBox(false);
-    fetchReplies();
+
+    // Add optimistic reply to the replies array if content is provided
+    if (replyContent) {
+      const optimisticReply: Reply = {
+        id: `optimistic-${Date.now()}`, // Temporary ID
+        username: "You", // Or get current user's username
+        content: replyContent,
+        published: new Date().toISOString(),
+        icon: undefined
+      };
+
+      setReplies(prev => [...prev, optimisticReply]);
+    }
+
+    // Show replies section if it wasn't already visible
     if (!showReplies) {
       setShowReplies(true);
     }
+
+    // Fetch actual replies to sync with server (this will replace the optimistic reply)
+    fetchReplies();
   };
 
   const toggleReplies = async () => {
