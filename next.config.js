@@ -1,12 +1,4 @@
-module.exports = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'media.discordapp.net',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-  },
-}
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+module.exports = nextConfig;

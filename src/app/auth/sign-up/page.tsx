@@ -21,14 +21,30 @@ export default function Page({ params }: { params: { slug: string } }) {
     console.log('Username from FormData:', username);
     console.log('Password from FormData:', password);
 
-    const response = await axios.post("http://127.0.0.1:8000/users/create", {username: username, display_name: "", summary: "", password: password, icon: ""});
-    console.log(response);
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/users/create", {
+        username: username,
+        display_name: "",
+        summary: "",
+        password: password,
+        icon: ""
+      });
+      console.log(response);
 
-    const data: {access_token: string} = response.data;
+      const data: { access_token: string } = response.data;
 
-    document.cookie = "jwt=" + data.access_token;
+      // Set cookie with proper attributes
+      document.cookie = `jwt=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
+      console.log('Cookie set:', document.cookie);
+
+      // Redirect to feed after successful signup
+      window.location.href = '/feed';
+    } catch (error) {
+      console.error('Signup failed:', error);
+    }
   }
- 
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
