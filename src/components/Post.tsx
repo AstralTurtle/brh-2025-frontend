@@ -189,7 +189,7 @@ export function Post(props: {
             </h2>
           </div>
 
-          <p className="text-lg font-normal text-white mb-3">{props.message}</p>
+          <p className="text-lg font-normal text-white mb-3 whitespace-pre-line">{props.message}</p>
 
           {/* {props.embed ? <iframe className="h-32" src={props.embed}></iframe> : <></>} */}
           {props.embed ? parse(props.embed) : <></>}
