@@ -1,5 +1,5 @@
 'use client'
- 
+
 import { useRouter } from 'next/navigation'
 import { Post } from "@/components/Post";
 import { CreatePost } from "@/components/CreatePost";
@@ -21,6 +21,7 @@ export type ActivityPubNote = {
   cc: string[];
   tag: unknown[];
   attachment: string[];
+  in_reply_to?: string; // Add this field
   '@context': string[];
 };
 
@@ -42,7 +43,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const observer = useRef<IntersectionObserver>();
   const router = useRouter()
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!getCookie("jwt")) {
       router.replace("/");
     }
@@ -73,8 +74,11 @@ export default function Page({ params }: { params: { slug: string } }) {
         return;
       }
 
+      // Filter out posts that are replies (have in_reply_to)
+      const mainPosts = data.filter((post: ActivityPubNote) => !post.in_reply_to);
+
       // Sort posts by published date (newest first)
-      const sortedData = [...data].sort((a, b) =>
+      const sortedData = [...mainPosts].sort((a, b) =>
         new Date(b.published).getTime() - new Date(a.published).getTime()
       );
 

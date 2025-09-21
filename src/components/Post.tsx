@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { Heart, MessageCircle, Repeat2, Share, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiService } from "@/lib/api";
-import { getDiceBearAvatar } from "@/lib/utils";
+import { getDiceBearAvatar, getCookie } from "@/lib/utils";
 import { ReplyComponent } from "./ReplyComponent";
 import parse from "html-react-parser";
 
@@ -15,6 +15,7 @@ interface Reply {
   content: string;
   published: string;
   icon?: string;
+  isOptimistic?: boolean; // Add flag to track optimistic replies
 }
 
 export function Post(props: {
@@ -23,7 +24,7 @@ export function Post(props: {
   avatar: string;
   date: Date;
   message: string;
-  embed: string;
+  embed?: string;
   media?: string[];
   isReply?: boolean;
 }) {
@@ -35,6 +36,7 @@ export function Post(props: {
   const [replies, setReplies] = useState<Reply[]>([]);
   const [replyCount, setReplyCount] = useState(0);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   // Extract username from ActivityPub ID or use as-is
   const extractUsername = (attributedTo: string): string => {
@@ -48,6 +50,20 @@ export function Post(props: {
   const avatarUrl = props.avatar || getDiceBearAvatar(displayUsername);
 
   useEffect(() => {
+    // Get current user for optimistic updates
+    const fetchCurrentUser = async () => {
+      try {
+        if (getCookie('jwt')) {
+          const userData = await apiService.getCurrentUser();
+          setCurrentUser(extractUsername(userData.id || userData.username));
+        }
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+
     if (props.id) {
       // Fetch like count
       apiService.getPostLikes(props.id)
@@ -73,10 +89,17 @@ export function Post(props: {
         username: extractUsername(reply.attributedTo),
         content: reply.content,
         published: reply.published,
-        icon: reply.icon
+        icon: reply.icon,
+        isOptimistic: false
       }));
 
-      setReplies(formattedReplies);
+      // Remove optimistic replies and replace with real ones
+      setReplies(prev => {
+        // Keep only non-optimistic replies, then add the new real replies
+        const nonOptimistic = prev.filter(r => !r.isOptimistic);
+        return [...nonOptimistic, ...formattedReplies];
+      });
+
       setReplyCount(formattedReplies.length);
     } catch (error) {
       console.error('Error fetching replies:', error);
@@ -107,19 +130,20 @@ export function Post(props: {
     }
   };
 
-  const handleReplyCreated = (replyContent?: string) => {
-    // Optimistic update - increment reply count and add optimistic reply immediately
+  const handleReplyCreated = async (replyContent?: string) => {
+    // Optimistic update - increment reply count immediately
     setReplyCount(prev => prev + 1);
     setShowReplyBox(false);
 
     // Add optimistic reply to the replies array if content is provided
-    if (replyContent) {
+    if (replyContent && currentUser) {
       const optimisticReply: Reply = {
         id: `optimistic-${Date.now()}`, // Temporary ID
-        username: "You", // Or get current user's username
+        username: currentUser,
         content: replyContent,
         published: new Date().toISOString(),
-        icon: undefined
+        icon: undefined,
+        isOptimistic: true // Mark as optimistic
       };
 
       setReplies(prev => [...prev, optimisticReply]);
@@ -130,8 +154,10 @@ export function Post(props: {
       setShowReplies(true);
     }
 
-    // Fetch actual replies to sync with server (this will replace the optimistic reply)
-    fetchReplies();
+    // Delay the server sync slightly to let the optimistic update show
+    setTimeout(() => {
+      fetchReplies();
+    }, 500);
   };
 
   const toggleReplies = async () => {

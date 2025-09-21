@@ -16,17 +16,18 @@ interface ReplyComponentProps {
 export function ReplyComponent({ postId, onReplyCreated, onCancel }: ReplyComponentProps) {
     const [content, setContent] = useState("");
     const [isReplying, setIsReplying] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!content.trim()) return;
 
-        // Optimistic update - immediately notify parent and clear form
         const replyContent = content.trim();
-        setContent("");
         setIsReplying(true);
+        setError(null);
 
-        // Call onReplyCreated immediately for optimistic UI update
+        // Optimistic update - immediately notify parent and clear form
+        setContent("");
         onReplyCreated?.(replyContent);
 
         try {
@@ -41,8 +42,12 @@ export function ReplyComponent({ postId, onReplyCreated, onCancel }: ReplyCompon
             // Success - optimistic update was correct
         } catch (error) {
             console.error('Error creating reply:', error);
-            // On error, restore the content so user can retry
+            setError('Failed to post reply. Please try again.');
+            // Restore the content so user can retry
             setContent(replyContent);
+
+            // Optionally, you could call a callback to rollback the optimistic update
+            // onReplyFailed?.();
         } finally {
             setIsReplying(false);
         }
@@ -67,6 +72,12 @@ export function ReplyComponent({ postId, onReplyCreated, onCancel }: ReplyCompon
                             disabled={isReplying}
                         />
 
+                        {error && (
+                            <div className="text-red-400 text-xs">
+                                {error}
+                            </div>
+                        )}
+
                         <div className="flex justify-between items-center">
                             <Button
                                 type="button"
@@ -74,6 +85,7 @@ export function ReplyComponent({ postId, onReplyCreated, onCancel }: ReplyCompon
                                 size="sm"
                                 onClick={onCancel}
                                 className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-600"
+                                disabled={isReplying}
                             >
                                 <X className="w-4 h-4 mr-1" />
                                 Cancel
@@ -86,7 +98,7 @@ export function ReplyComponent({ postId, onReplyCreated, onCancel }: ReplyCompon
                                 className="bg-violet-600 hover:bg-violet-700 text-white disabled:bg-zinc-600 disabled:text-zinc-400"
                             >
                                 {isReplying ? (
-                                    "Replying..."
+                                    "Posting..."
                                 ) : (
                                     <>
                                         <Send className="w-3 h-3 mr-1" />
